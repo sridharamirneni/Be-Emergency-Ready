@@ -1,0 +1,6 @@
+{
+  "name": "Be Ready: Household Emergency & Rotation Manager",
+  "description": "Offline-capable household emergency preparedness, dynamic supply scaling, FIFO pantry rotation, and Irish civil-defense action planner.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
