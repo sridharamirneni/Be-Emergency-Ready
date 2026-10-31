@@ -89,8 +89,8 @@ export default defineConfig(() => {
       },
     },
     server: {
-      // HMR is disabled in AI Studio to prevent WebSocket errors in the preview environment.
-      hmr: false,
+      // HMR is controlled via server.ts httpServer binding; file watching is disabled when DISABLE_HMR=true.
+      hmr: true,
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };

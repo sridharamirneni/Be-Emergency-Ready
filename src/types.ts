@@ -33,13 +33,14 @@ export type ItemCategory =
   | 'Medical & Hygiene'
   | 'Light, Warmth & Cooking'
   | 'Comms, Power & Cash'
-  | 'Documents (Dokumentenmappe)';
+  | 'Important Documents';
 
 export type StorageLocation =
   | 'Kitchen Pantry'
   | 'Under Stairs'
   | 'Rucksack #1 (Parent 1 - Baby & Docs Lead)'
-  | 'Rucksack #2 (Parent 2 - Pets & Utilities Lead)';
+  | 'Rucksack #2 (Parent 2 - Pets & Utilities Lead)'
+  | (string & {});
 
 export interface InventoryItem {
   id: string;
@@ -155,3 +156,58 @@ export interface MetEireannWeatherState {
   lastUpdated: string;
   isSimulatedOverride?: boolean;
 }
+
+export type HouseholdRole = 'owner' | 'member';
+
+export interface UserAccount {
+  id: string;
+  name: string;
+  emailOrUsername: string;
+  passwordHash: string;
+  householdId: string;
+  role: HouseholdRole;
+  createdAt: string;
+}
+
+export interface HouseholdInvite {
+  id: string;
+  householdId: string;
+  householdName: string;
+  shareCode: string;
+  invitedByUserId: string;
+  invitedByName: string;
+  inviteeEmailOrUsername: string;
+  status: 'pending' | 'accepted' | 'declined';
+  createdAt: string;
+}
+
+export interface ReadinessTrendPoint {
+  date: string; // YYYY-MM-DD
+  label: string; // e.g. "Oct 02"
+  score: number; // 0-100 overall readiness score
+  waterScore: number; // 0-100
+  foodScore: number; // 0-100
+  milestoneNote?: string;
+}
+
+export interface SharedHouseholdData {
+  id: string;
+  name: string;
+  shareCode: string;
+  ownerUserId: string;
+  memberUserIds: string[];
+  updatedAt: string;
+  lastModifiedBy?: string;
+  roster: HouseholdMember[];
+  tier: PreparednessTier;
+  inventory: InventoryItem[];
+  storageLocations: StorageLocation[];
+  powerDevices: PowerDevice[];
+  stormChecklist: StormChecklistItem[];
+  irishPlan: IrishHouseholdPlan;
+  rotationLogs: RotationLogEntry[];
+  readinessHistory?: ReadinessTrendPoint[];
+  setupCompleted: boolean;
+}
+
+

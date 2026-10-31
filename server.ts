@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import { createServer as createHttpServer } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
@@ -171,7 +172,7 @@ async function startServer() {
 - "Medical & Hygiene"
 - "Light, Warmth & Cooking"
 - "Comms, Power & Cash"
-- "Documents (Dokumentenmappe)"
+- "Important Documents"
 Return a JSON array of items.`,
         };
 
@@ -380,12 +381,16 @@ Generate exactly TWO practical recipes:
     });
   });
 
+  const httpServer = createHttpServer(app);
+
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
-        hmr: false,
-        watch: null,
+        hmr: {
+          server: httpServer,
+        },
+        watch: process.env.DISABLE_HMR === 'true' ? null : {},
       },
       appType: 'spa',
     });
@@ -398,7 +403,7 @@ Generate exactly TWO practical recipes:
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`Be Ready Emergency Manager running on http://localhost:${PORT}`);
   });
 }

@@ -39,7 +39,7 @@ const ALL_CATEGORIES: ItemCategory[] = [
   'Medical & Hygiene',
   'Light, Warmth & Cooking',
   'Comms, Power & Cash',
-  'Documents (Dokumentenmappe)',
+  'Important Documents',
 ];
 
 interface BarcodeScannerModalProps {
@@ -58,12 +58,14 @@ interface BarcodeScannerModalProps {
     notes: string;
   }) => void;
   existingInventory?: InventoryItem[];
+  storageLocations?: StorageLocation[];
 }
 
 export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
   isOpen,
   onClose,
   onAddOrUpdateBarcodeItem,
+  storageLocations = STORAGE_LOCATIONS,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -287,12 +289,12 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-xs overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/65 p-0 sm:p-4 backdrop-blur-xs"
       role="dialog"
       aria-modal="true"
       aria-labelledby="barcode-scanner-modal-title"
     >
-      <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-5 my-8">
+      <div className="w-full max-w-2xl max-h-[92dvh] overflow-y-auto rounded-t-2xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-2xl space-y-5">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
           <div className="flex items-center gap-3">
@@ -300,8 +302,8 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
               <Barcode className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                CAMERA BARCODE SCANNER · AUTO WEIGHT &amp; SHELF-LIFE ENGINE
+              <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                Camera Barcode Scanner • Auto Weight &amp; Shelf-Life Engine
               </div>
               <h3
                 id="barcode-scanner-modal-title"
@@ -383,7 +385,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                   value={barcodeInput}
                   onChange={(e) => setBarcodeInput(e.target.value)}
                   placeholder="e.g. 5000157024671"
-                  className="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs font-mono tabular-nums text-slate-900 dark:text-slate-100"
+                  className="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs tabular-nums text-slate-900 dark:text-slate-100"
                 />
                 <button
                   type="button"
@@ -402,8 +404,8 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
 
             {/* Quick-Scan Common Pantry Barcodes */}
             <div>
-              <div className="text-xs font-mono font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
-                QUICK-SCAN COMMON PANTRY BARCODES (INSTANT PRESETS):
+              <div className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+                Quick-Scan Common Pantry Barcodes (Instant Presets):
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {COMMON_PANTRY_BARCODES.map((preset) => {
@@ -413,7 +415,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                       key={preset.ean}
                       type="button"
                       onClick={() => applySuggestion(lookupBarcodeItem(preset.ean))}
-                      className={`px-2.5 py-1 rounded-md text-xs font-mono transition-colors cursor-pointer whitespace-nowrap ${
+                      className={`px-2.5 py-1 rounded-md text-xs tabular-nums transition-colors cursor-pointer whitespace-nowrap ${
                         isSelected
                           ? 'bg-emerald-600 text-white font-semibold'
                           : 'border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-500'
@@ -434,13 +436,13 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
           <div className="flex items-start gap-2.5">
             <Scale className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
             <div>
-              <div className="text-slate-500 dark:text-slate-400 font-mono">
-                SUGGESTED AVG WEIGHT
+              <div className="text-slate-500 dark:text-slate-400 font-medium">
+                Suggested Avg Weight
               </div>
-              <div className="text-sm font-bold font-mono tabular-nums text-slate-900 dark:text-slate-100 mt-0.5">
+              <div className="text-sm font-bold tabular-nums text-slate-900 dark:text-slate-100 mt-0.5">
                 {selectedSuggestion.averageUnitWeightKg} kg / unit
               </div>
-              <div className="text-[11px] text-slate-600 dark:text-slate-300">
+              <div className="text-[11px] text-slate-600 dark:text-slate-300 tabular-nums">
                 Batch ({itemQty}x): {totalBatchWeightKg} kg total
               </div>
             </div>
@@ -449,10 +451,10 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
           <div className="flex items-start gap-2.5">
             <Clock className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
             <div>
-              <div className="text-slate-500 dark:text-slate-400 font-mono">
-                STANDARD SHELF LIFE
+              <div className="text-slate-500 dark:text-slate-400 font-medium">
+                Standard Shelf Life
               </div>
-              <div className="text-sm font-bold font-mono tabular-nums text-slate-900 dark:text-slate-100 mt-0.5">
+              <div className="text-sm font-bold tabular-nums text-slate-900 dark:text-slate-100 mt-0.5">
                 {shelfLifeDays} days (~{Math.round(Number(shelfLifeDays) / 30)} mos)
               </div>
               <div className="text-[11px] text-slate-600 dark:text-slate-300">
@@ -464,13 +466,13 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
           <div className="flex items-start gap-2.5">
             <Sparkles className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
             <div>
-              <div className="text-slate-500 dark:text-slate-400 font-mono">
-                SUGGESTED EXPIRY DATE
+              <div className="text-slate-500 dark:text-slate-400 font-medium">
+                Suggested Expiry Date
               </div>
-              <div className="text-sm font-bold font-mono tabular-nums text-emerald-600 dark:text-emerald-400 mt-0.5">
+              <div className="text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400 mt-0.5">
                 {itemExpiryDate}
               </div>
-              <div className="text-[11px] text-slate-600 dark:text-slate-300">
+              <div className="text-[11px] text-slate-600 dark:text-slate-300 tabular-nums">
                 EAN: {selectedSuggestion.ean}
               </div>
             </div>
@@ -533,7 +535,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                 required
                 value={itemQty}
                 onChange={(e) => setItemQty(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-mono tabular-nums text-slate-900 dark:text-slate-100"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs tabular-nums text-slate-900 dark:text-slate-100"
               />
             </div>
 
@@ -552,7 +554,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                 required
                 value={itemWeightKg}
                 onChange={(e) => setItemWeightKg(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-mono tabular-nums text-slate-900 dark:text-slate-100"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs tabular-nums text-slate-900 dark:text-slate-100"
               />
             </div>
 
@@ -569,7 +571,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                 min={1}
                 value={shelfLifeDays}
                 onChange={(e) => handleShelfLifeDaysChange(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-mono tabular-nums text-slate-900 dark:text-slate-100"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs tabular-nums text-slate-900 dark:text-slate-100"
               />
             </div>
 
@@ -586,7 +588,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                 required
                 value={itemExpiryDate}
                 onChange={(e) => setItemExpiryDate(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-mono text-slate-900 dark:text-slate-100"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs tabular-nums text-slate-900 dark:text-slate-100"
               />
             </div>
 
@@ -603,7 +605,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                 onChange={(e) => setItemLocation(e.target.value as StorageLocation)}
                 className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-slate-100"
               >
-                {STORAGE_LOCATIONS.map((loc) => (
+                {storageLocations.map((loc) => (
                   <option key={loc} value={loc}>
                     {loc}
                   </option>
